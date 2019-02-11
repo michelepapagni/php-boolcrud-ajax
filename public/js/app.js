@@ -15266,16 +15266,56 @@ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"
 
 
 $(document).ready(function () {
-  $.ajax({
-    url: 'http://localhost/Boolean/ospiti-crud-ajax/database/all.php',
-    method: 'GET',
-    success: function success(data) {
-      var results = JSON.parse(data);
-      printGuests(results);
-    },
-    error: function error() {
-      alert('Si è verificato un errore');
-    }
+  if ($('.container.index').length > 0) {
+    $.ajax({
+      url: 'http://localhost/Boolean/ospiti-crud-ajax/database/all.php',
+      method: 'GET',
+      success: function success(data) {
+        var results = JSON.parse(data);
+        printGuests(results);
+      },
+      error: function error() {
+        alert('Si è verificato un errore');
+      }
+    });
+  }
+
+  if ($('.container.show').length > 0) {
+    var dataId = $('.container.show').data('id');
+    $.ajax({
+      url: 'http://localhost/Boolean/ospiti-crud-ajax/database/show.php',
+      method: 'GET',
+      data: {
+        id: dataId
+      },
+      success: function success(data) {
+        var result = JSON.parse(data);
+        printCard(result);
+      },
+      error: function error() {
+        alert('Si è verificato un errore');
+      }
+    });
+  }
+
+  $(document).on('click', '.delete-button', function () {
+    var dataId = $(this).data('id');
+    var myThis = $(this);
+    $.ajax({
+      url: 'http://localhost/Boolean/ospiti-crud-ajax/database/delete.php',
+      method: 'POST',
+      data: {
+        id: dataId
+      },
+      success: function success(data) {
+        if (data == 'success') {
+          myThis.parent().parent().addClass('d-none');
+        }
+      },
+      error: function error() {
+        alert('Si è verificato un errore');
+      }
+    });
   });
 });
 
@@ -15292,6 +15332,23 @@ function printGuests(results) {
     var html = template(context);
     $('tbody').append(html);
   }
+}
+
+function printCard(ospite) {
+  var source = $('#show-ospite').html();
+  var template = handlebars_dist_cjs_handlebars_js__WEBPACK_IMPORTED_MODULE_0___default.a.compile(source);
+  var context = {
+    id: ospite.id,
+    name: ospite.name,
+    lastname: ospite.lastname,
+    date_of_birth: ospite.date_of_birth,
+    document_type: ospite.document_type,
+    document_number: ospite.document_number,
+    created_at: ospite.created_at,
+    updated_at: ospite.updated_at
+  };
+  var html = template(context);
+  $('.content').append(html);
 }
 
 /***/ }),
